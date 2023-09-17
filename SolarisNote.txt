@@ -1,0 +1,91 @@
+#--------Service Management Facility----------# (SMF)
+
+svcs  [Online Servisleri Görüntüler]
+svcs -a [Tüm Servisleri Görüntüler]
+svcs -p ssh [Servisin Portunu görüntüler]
+svcs -x ntp [Detaylı Servis Bilgisini Görüntüler]
+svcs -n ssh [Servis ile ilgili bildirim] 
+svcs console
+svcs sendmail
+
+svcs -d [Çalışabilmesi için gerekli servisleri listeler.]
+svcs -D [Servisin çalışması ile çalışan diğer servisleri görüntüler.]
+
+svcs -d ssh
+svcs -l ssh [Servis log durumu ve log dosyasının yolunu görüntüler.]
+svcs -D ssh
+
+[Servis Kapatma]
+svcadm disable /application/cups/scheduler:default
+
+[Geçici olarak Servis Kapatma ]
+svcadm disable -t /application/cups/scheduler:default
+
+[Servis Açma]
+svcadm enable /application/cups/scheduler:default
+
+[Servis Yenileme]
+svcadm refresh /application/cups/scheduler:default
+
+[Servis Yeniden Başlatmak]
+svcadm restart /application/cups/scheduler:default
+
+
+[SMF Notification]
+
+pkg info smtp-notify
+pkg install system/fault-management/smtp-notify
+svcs -x smtp-notify
+ps -ef | grep smtp-notify
+svccfg -s svc:/system/svc/global:default set-notify -g from-online mailto:root@localhost
+svccfg -s svc:/system/svc/global:default listnotify
+svccfg -s svc:/system/svc/global:default -delnotify -g all
+
+#------------- Ağ Komutları ----------------#
+
+ifconfig net0
+
+
+#------------- Image Packaging System (IPS) ----------------#
+
+zfs create -o atime=off rpool/export/IPS/repo
+./sol-install.ksh -d /export/IPS/repo
+svcs pkg/server
+
+svccfg -s pkg/server setprop pkg/inst_root=/export/IPS/repo
+svccfg -s pkg/server setprop pkg/readonly=true
+svcprop -p pkg/inst_root pkg/server
+svcadm refresh pkg/server
+svcprop -p pkg/inst_root pkg/server
+svcadm enable pkg/server
+pkg set-publisher -G '*' /export/IPS/repo solaris
+
+#--------- PKG Komutları ----------#
+
+pkg search -l vim
+pkg list -a [Varolan Paketleri Listeler]
+pkg info gzip
+pkg verify -v nano
+
+==========DRY RUN=====================
+pkg install -nv solaris-desktop
+
+=============Boot Enviroment===========
+beadm create newenv
+beadm active newenv
+
+beadm mount newenv /mnt2
+pkg -R /mnt2 install snort
+
+
+======= SnapShot Olusturma & Geri Donme =========
+
+
+
+
+
+
+
+
+
+
