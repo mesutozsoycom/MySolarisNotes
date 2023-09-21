@@ -79,6 +79,8 @@ pkg -R /mnt2 install snort
 
 
 ======= SnapShot Olusturma & Geri Donme =========
+ beadm create -a solaris@201800000 newenvsnap
+
 
 
 
